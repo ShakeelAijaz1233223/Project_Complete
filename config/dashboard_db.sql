@@ -1,10 +1,31 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Feb 13, 2026 at 04:59 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `dashboard_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_users`
+--
 
 CREATE TABLE `admin_users` (
   `id` int(11) NOT NULL,
@@ -27,7 +48,7 @@ CREATE TABLE `admin_users` (
 --
 
 INSERT INTO `admin_users` (`id`, `name`, `email`, `phone`, `address`, `password`, `role`, `status`, `avatar`, `created_at`, `last_login`, `updated_at`, `last_seen`) VALUES
-(1, 'Admin Dashboard', 'admin@gmail.com', '', '', 'admin123', 'admin', 'active', 'avatar_1_1769860062.jpg', '2026-01-31 09:07:09', NULL, '2026-02-08 07:47:51', '2026-02-08 12:47:51');
+(1, 'Admin Dashboard', 'admin@gmail.com', '', '', 'admin123', 'admin', 'active', 'avatar_1_1769860062.jpg', '2026-01-31 09:07:09', NULL, '2026-02-13 15:24:28', '2026-02-13 20:24:28');
 
 -- --------------------------------------------------------
 
@@ -53,9 +74,7 @@ CREATE TABLE `albums` (
 --
 
 INSERT INTO `albums` (`id`, `title`, `artist`, `year`, `genre`, `language`, `cover`, `audio`, `video`, `created_at`) VALUES
-(2, 'asdf', 'asdf', 2026, 'Pop', 'asdf', '1770453202_6986f8d23767d.jpeg', '', '1770453202_6986f8d237aaf.mp4', '2026-02-07 08:33:22'),
-(3, 'Shakeel ahmed', 'ShakeelHussan', 2017, 'Pop', 'English', '1770465976_69872ab853984.jpeg', '', '1770465976_69872ab853d01.mp4', '2026-02-07 12:06:16'),
-(4, 'ali', 'ali', 2000, 'Pop', 'en', '1770474637_69874c8d1324b.jpg', '', '1770474637_69874c8d137f5.mp4', '2026-02-07 14:30:37');
+(5, 'asdf', 'asdf', 2026, 'Rock', 'urdu', '1770917712_698e0f50b3216.jpg', '', '1770917712_698e0f50b3854.mp4', '2026-02-12 17:35:12');
 
 -- --------------------------------------------------------
 
@@ -70,6 +89,13 @@ CREATE TABLE `album_reviews` (
   `comment` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `album_reviews`
+--
+
+INSERT INTO `album_reviews` (`id`, `album_id`, `rating`, `comment`, `created_at`) VALUES
+(22, 5, 5, 'asdf', '2026-02-13 11:45:30');
 
 -- --------------------------------------------------------
 
@@ -113,7 +139,7 @@ CREATE TABLE `music` (
 --
 
 INSERT INTO `music` (`id`, `title`, `artist`, `album`, `year`, `file`, `album_id`, `genre`, `duration`, `description`, `created_at`, `cover_image`, `full_cover_image_path`) VALUES
-(28, 'shakeel', 'ali', 'ali', '2001', '1770477244_698756bc9a342.mp3', NULL, NULL, NULL, NULL, '2026-02-07 15:14:04', '1770477244_698756bc9a346.jpg', NULL);
+(30, 'music', 'ASDF', 'sasa', '2001', '1770917903_698e100f8a5a4.mp3', NULL, NULL, NULL, NULL, '2026-02-12 17:38:23', '1770917903_698e100f8a5a7.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -143,13 +169,6 @@ CREATE TABLE `playlists` (
   `visibility` enum('public','private') DEFAULT 'public',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `playlists`
---
-
-INSERT INTO `playlists` (`id`, `name`, `created_by`, `description`, `visibility`, `created_at`) VALUES
-(1, 'My Playlist', 1, 'Admin playlist', 'public', '2026-01-29 14:30:16');
 
 -- --------------------------------------------------------
 
@@ -240,8 +259,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `address`, `password`, `status`, `created_at`, `last_seen`) VALUES
-(1, 'shayan', 'shayan@gmail.com', '1234567890', 'home', '$2y$10$UUHMjQNZwUlA1vD0fu/Ig.Jf3/rYWma.E7GTfNsYxVlXV8xN2m2mO', 'active', '2026-01-30 19:16:14', '2026-01-31 14:18:45'),
-(2, 'ali', 'ali@gamil.com', '1234567890', 'home', '$2y$10$nwOn6UD1vBLk0b3VygsgiOBfjSgHWrsTpaCWZeCcgIymOWC83to1G', 'active', '2026-01-31 09:16:13', '2026-02-08 23:14:47');
+(3, 'shakeel', 'shakeel@gmail.com', '1234567890', 'Aptech DHA ', '$2y$10$p4g0eSbaVH6CSyk7M4DD6OUeSh75KPpHwg7iWrOUOe6NyYmFe7AwS', 'active', '2026-02-13 11:43:58', '2026-02-13 20:38:52');
 
 -- --------------------------------------------------------
 
@@ -271,8 +289,7 @@ CREATE TABLE `videos` (
 --
 
 INSERT INTO `videos` (`id`, `title`, `artist`, `album`, `year`, `file`, `album_id`, `genre`, `duration`, `description`, `created_at`, `thumbnail`, `full_thumbnail_path`, `file_path`) VALUES
-(20, 'muskan', 'muskannazx', 'song', '2010', '1770469633_698739010bb7a.mp4', NULL, NULL, NULL, NULL, '2026-02-07 13:07:13', '1770469633_698739010bb7e.jpg', NULL, ''),
-(21, 'asdfasdf', 'asdf', 'as', '2001', '1770469886_698739feb0648.mp4', NULL, NULL, NULL, NULL, '2026-02-07 13:11:26', '1770469886_698739feb064b.jpg', NULL, '');
+(24, 'ASDF', 'ADF', 'FD', '2020', '1770917163_60c54edb.mp4', NULL, NULL, NULL, NULL, '2026-02-12 17:26:03', '1770917163_3b8df64c.jpg', NULL, '');
 
 -- --------------------------------------------------------
 
@@ -426,13 +443,13 @@ ALTER TABLE `admin_users`
 -- AUTO_INCREMENT for table `albums`
 --
 ALTER TABLE `albums`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `album_reviews`
 --
 ALTER TABLE `album_reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `contact_messages`
@@ -444,7 +461,7 @@ ALTER TABLE `contact_messages`
 -- AUTO_INCREMENT for table `music`
 --
 ALTER TABLE `music`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `music_reviews`
@@ -474,7 +491,7 @@ ALTER TABLE `playlist_videos`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `settings`
@@ -486,13 +503,13 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `videos`
 --
 ALTER TABLE `videos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `video_likes`
@@ -504,7 +521,7 @@ ALTER TABLE `video_likes`
 -- AUTO_INCREMENT for table `video_reviews`
 --
 ALTER TABLE `video_reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables
@@ -567,3 +584,6 @@ ALTER TABLE `video_reviews`
   ADD CONSTRAINT `video_reviews_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `videos` (`id`) ON DELETE CASCADE;
 COMMIT;
 
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
