@@ -1,0 +1,691 @@
+<?php
+session_start();
+include_once("../config/db.php");
+ $message_status = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = strip_tags(trim($_POST['name']));
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $user_msg = strip_tags(trim($_POST['message']));
+
+    // Yahan aap apna database insert ya email logic daal sakte hain
+    $message_status = "<p style='color: #00ff7f; background: rgba(0,255,127,0.1); padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; border: 1px solid rgba(0,255,127,0.3); font-weight: 600; font-size: 13px;'>Message Sent Successfully!</p>";
+}
+
+// User check for Header consistency
+ $user = null;
+if (isset($_SESSION['email'])) {
+    $email = mysqli_real_escape_string($conn, $_SESSION['email']);
+    $res = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' LIMIT 1");
+    if ($res && mysqli_num_rows($res) > 0) {
+        $user = mysqli_fetch_assoc($res);
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | SOUND 2026</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #ff0055;
+            --bg-dark: #050505;
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* --- SYNCED HEADER (Matches Home/About) --- */
+        header {
+            background: rgba(5, 5, 5, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            /* z-index: 1000; */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(16px, 4vw, 22px);
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        /* --- USER DROPDOWN --- */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-trigger {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            right: 0;
+            top: 55px;
+            background: rgba(15, 15, 17, 0.98);
+            backdrop-filter: blur(25px);
+            min-width: 200px;
+            border-radius: 18px;
+            padding: 10px;
+            border: 1px solid var(--border-glass);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            color: #fff;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .dropdown-content a i {
+            color: var(--primary);
+            width: 15px;
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(255, 0, 85, 0.1);
+            transform: translateX(5px);
+        }
+
+        /* --- CONTACT CONTENT --- */
+        .page-container {
+            min-height: 100vh;
+            padding: 140px 8% 50px;
+        }
+
+        .hero-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero-title h1 {
+            font-family: 'Syncopate';
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            text-transform: uppercase;
+        }
+
+        .hero-title h1 span {
+            color: var(--primary);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .info-text h2 {
+            font-family: 'Syncopate';
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .info-text p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .contact-item i {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 0, 85, 0.1);
+            border: 1px solid rgba(255, 0, 85, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            color: var(--primary);
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            padding: 16px;
+            border-radius: 15px;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .send-btn {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.4s;
+        }
+
+        .send-btn:hover {
+            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.3);
+            transform: translateY(-3px);
+        }
+
+        footer {
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid var(--border-glass);
+            opacity: 0.4;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Mobile Menu Styles */
+        .menu-btn {
+            display: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(5, 5, 5, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1002;
+            padding: 80px 20px 20px;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            border-left: 1px solid var(--border-glass);
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .mobile-menu-links {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mobile-menu-links a {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .mobile-menu-links a:hover,
+        .mobile-menu-links a.active {
+            color: var(--primary);
+        }
+
+        .mobile-menu-user {
+            padding-top: 20px;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .mobile-menu-user a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-size: 14px;
+            padding: 10px 0;
+            text-decoration: none;
+        }
+
+        .mobile-menu-user a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 1200px) {
+            .content-grid {
+                gap: 50px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-title {
+                margin-bottom: 30px;
+            }
+
+            .form-card {
+                padding: 30px;
+                border-radius: 25px;
+            }
+
+            .info-text h2 {
+                font-size: 22px;
+            }
+
+            .info-text p {
+                font-size: 15px;
+            }
+
+            nav {
+                display: none;
+            }
+
+                 .menu-btn {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+}
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 5%;
+            }
+
+            .page-container {
+                padding: 120px 5% 40px;
+            }
+
+            .hero-title {
+                margin-bottom: 40px;
+            }
+
+            .hero-title h1 {
+                font-size: clamp(1.8rem, 5vw, 3rem);
+            }
+
+            .content-grid {
+                gap: 30px;
+            }
+
+            .form-card {
+                padding: 25px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 14px;
+                font-size: 13px;
+            }
+
+            .send-btn {
+                padding: 16px;
+                font-size: 11px;
+            }
+
+            .user-trigger span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-container {
+                padding: 110px 5% 30px;
+            }
+
+            .hero-title h1 {
+                font-size: clamp(1.5rem, 5vw, 2.2rem);
+            }
+
+            .contact-item {
+                gap: 12px;
+            }
+
+            .contact-item i {
+                width: 35px;
+                height: 35px;
+                font-size: 12px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-group label {
+                font-size: 9px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 12px;
+            }
+
+            .send-btn {
+                padding: 14px;
+                font-size: 10px;
+            }
+
+            .mobile-menu {
+                width: 280px;
+                right: -280px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .hero-title h1 {
+                font-size: clamp(1.2rem, 5vw, 2rem);
+            }
+
+            footer {
+                font-size: 9px;
+                padding: 30px 5%;
+            }
+
+            .mobile-menu {
+                width: 250px;
+                right: -250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="index.php" class="logo">SOU<span>N</span>D</a>
+        <nav>
+            <ul>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="user_music_view.php">Music</a></li>
+                <li><a href="user_video_view.php">Videos</a></li>
+                <li><a href="about.php">About</a></li>
+                <li><a href="contact.php" style="color:var(--primary)">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-actions">
+            <?php if ($user): ?>
+                <div class="user-dropdown">
+                    <div class="user-trigger">
+                        <div style="width: 25px; height: 25px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;">
+                            <?= strtoupper(substr($user['name'], 0, 1)); ?>
+                        </div>
+                        <span style="font-size: 12px; font-weight: 700;"><?= htmlspecialchars($user['name']); ?></span>
+                        <i class="fas fa-chevron-down" style="font-size: 9px; opacity: 0.5;"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="user_setting.php"><i class="fas fa-cog"></i> Settings</a>
+                        <div style="height: 1px; background: var(--border-glass); margin: 5px 0;"></div>
+                        <a href="user_logout.php" style="color: #ff4d4d;"><i class="fas fa-power-off"></i> Logout</a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <a href="login.php" style="background: var(--primary); padding: 8px 22px; border-radius: 30px; text-decoration: none; color: white; font-size: 11px; font-weight: 800; transition: 0.3s;">LOGIN</a>
+            <?php endif; ?>
+            <div class="menu-btn" id="menuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-close" id="mobileMenuClose">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="index.php">Home</a>
+            <a href="user_music_view.php">Music</a>
+            <a href="user_video_view.php">Videos</a>
+            <a href="about.php">About</a>
+            <a href="contact.php" style="color:var(--primary)">Contact</a>
+        </div>
+        <div class="mobile-menu-user">
+            <?php if ($user): ?>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-glass);">
+                    <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800;">
+                        <?= strtoupper(substr($user['name'], 0, 1)); ?>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700;"><?= htmlspecialchars($user['name']); ?></div>
+                        <div style="font-size: 12px; color: rgba(255, 255, 255, 0.5);"><?= htmlspecialchars($user['email']); ?></div>
+                    </div>
+                </div>
+                <a href="user_setting.php"><i class="fas fa-cog"></i> Settings</a>
+                <a href="user_logout.php" style="color: #ff4d4d;"><i class="fas fa-power-off"></i> Logout</a>
+            <?php else: ?>
+                <a href="login.php" style="background: var(--primary); padding: 10px 20px; border-radius: 30px; text-align: center; margin-top: 10px;">LOGIN</a>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="hero-title animate__animated animate__fadeInDown">
+            <h1>GET IN <span>TOUCH</span></h1>
+        </div>
+
+        <div class="content-grid">
+            <div class="info-text animate__animated animate__fadeInLeft">
+                <h2>WANT TO TALK?</h2>
+                <p>Have a question or feedback? We're here to help you experience music like never before. Reach out and our team will get back to you within 24 hours.</p>
+
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <p style="font-size: 10px; color: var(--primary); font-weight: 800;">EMAIL US</p>
+                        <p style="font-weight: 600;">support@sound2026.com</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-location-dot"></i>
+                    <div>
+                        <p style="font-size: 10px; color: var(--primary); font-weight: 800;">VISIT US</p>
+                        <p style="font-weight: 600;">Digital World, Soung and Music Play </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card animate__animated animate__fadeInRight">
+                <?php echo $message_status; ?>
+                <form action="contact.php" method="POST">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" placeholder="name@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Message</label>
+                        <textarea name="message" rows="5" placeholder="Tell us something..." required></textarea>
+                    </div>
+                    <button type="submit" class="send-btn">SEND MESSAGE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 SOUND  | ALL RIGHTS RESERVED</footer>
+
+    <script>
+        // Mobile Menu
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-links a');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('active');
+            mobileMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuBtn.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+    </script>
+</body>
+
+</html>
