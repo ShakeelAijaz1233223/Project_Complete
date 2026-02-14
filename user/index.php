@@ -1450,7 +1450,7 @@ let charIndex = 0;
 function type() {
 
     // 🎨 Color control
-    if (texts[textIndex] === "VIDIO'S & ALBUMS") {
+    if (texts[textIndex] === "VIDIEO'S & ALBUMS") {
         animatedText.style.color = "#ff0055"; // pink
     } else {
         animatedText.style.color = "#ffffff"; // white
